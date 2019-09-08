@@ -1,0 +1,99 @@
+package com.offon.jd;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
+public class JDBCUtils {
+	private static String DRIVERName;
+	private static String URL;
+	private static String USERNAME;
+	private static String PASSWORD;
+	static {
+		Properties p = new Properties();
+		try {
+			p.load(new FileInputStream("src/db.properties"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		DRIVERName = p.getProperty("DriverName");
+		URL=p.getProperty("Url");
+		USERNAME = p.getProperty("UserName");
+		PASSWORD = p.getProperty("Password");
+	}
+	
+	static {
+		//1、在静态代码块中加载驱动
+		try {
+			Class.forName(DRIVERName);
+		} catch (ClassNotFoundException e) {
+			System.out.println("驱动加载异常");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//2、创建一个获取连接对象的静态方法getConn
+	public static Connection getConn() {
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+		} catch (SQLException e) {
+			System.out.println("连接对象获取异常");
+			e.printStackTrace();
+		}
+		return conn;
+	}
+	
+	
+	//3、创建一个释放资源的静态方法backResource(ResultSet rs,Statement stmt,Connection conn)
+	public static void backResource(ResultSet rs,Statement stmt,Connection conn){
+		if(rs!=null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				System.out.println("关闭ResultSet异常");
+				e.printStackTrace();
+			}
+			rs = null;
+		}
+		if(stmt!=null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("关闭Statement异常");
+				e.printStackTrace();
+			}
+			stmt = null;
+		}
+		if(conn!=null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				System.out.println("关闭Connection异常");
+				e.printStackTrace();
+			}
+			conn = null;
+		}
+		
+		
+	}
+
+}
+
+
+
+
+db.properties配置文件
+
+
+DriverName=com.mysql.jdbc.Driver
+Url=jdbc:mysql:///day09
+UserName=root
+Password=root
