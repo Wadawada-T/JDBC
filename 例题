@@ -1,0 +1,48 @@
+	//添加张三的信息
+
+	public static void main(String[] args) throws Exception {
+		String username = "张三";
+		double money = 20000; 
+		Connection conn = JDBCUtils.getConn();
+		PreparedStatement pstmt = conn.prepareStatement(" insert into account values(null,?,?) ");
+		pstmt.setString(1, username);
+		pstmt.setDouble(2, money);
+		int i = pstmt.executeUpdate();
+		System.out.println(i>0?"添加成功":"添加失败");
+		JDBCUtils.backResource(null, pstmt, conn);
+
+	}
+  
+  
+  
+  // 添加李四的信息
+	public static void main(String[] args) throws Exception {
+		String username = "李四";
+		double money = 20000; 
+		Connection conn = JDBCUtils.getConn();
+		PreparedStatement pstmt = conn.prepareStatement(" insert into account values(null,?,?) ");
+		pstmt.setString(1, username);
+		pstmt.setDouble(2, money);
+		int i = pstmt.executeUpdate();
+		System.out.println(i>0?"添加成功":"添加失败");
+		JDBCUtils.backResource(null, pstmt, conn);
+
+	}
+  
+  
+  //3、实现功能张三的账户减少8000元，李四的账户增加8000元
+		Connection conn = JDBCUtils.getConn();
+		
+		PreparedStatement pstmt1 = conn.prepareStatement(" update account set money=money-8000 where aid=1 ");
+		PreparedStatement pstmt2 = conn.prepareStatement(" update account set money=money+8000 where aid=2 ");
+		
+		int a1 = pstmt1.executeUpdate();
+		System.out.println(a1>0?"扣工资成功":"扣工资失败");
+		
+		int a2 = pstmt2.executeUpdate();
+		System.out.println(a2>0?"涨工资成功":"涨工资失败");
+		
+		JDBCUtils.backResource(null, pstmt1, conn);	
+		JDBCUtils.backResource(null, pstmt2, conn);	
+
+	}
