@@ -1,0 +1,33 @@
+实现步骤：
+  1.准备工作：创建好数据库、数据表、表中记录、创建项目、导入jar
+  2.创建一个类、主方法
+  3.JDBC操作数据库：
+        1.加载驱动
+        2.创建连接
+        3.创建操作数据库的对象
+        4.执行SQL语句，获得返回集、解析结果集
+        5.释放资源
+    
+    
+    
+    public static void main(String[] args) throws Exception {
+//		1、加载驱动
+		Class.forName("com.mysql.jdbc.Driver");		
+//		2、创建连接
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/day09", "root", "root");
+//		3、创建操作数据库的对象
+		Statement stmt = conn.createStatement();
+//		4、执行SQL语句，获得返回结果集、解析结果集
+		ResultSet rs = stmt.executeQuery(" select * from users ");
+		while(rs.next()) {
+			int uid = rs.getInt("uid");
+			String uname = rs.getString("uname");
+			String upwd = rs.getString("upwd");
+			
+			System.out.println(uid+" :"+uname+" :"+upwd);
+		}
+//		5、释放资源
+		rs.close();
+		stmt.close();
+		conn.close();	
+	}	
