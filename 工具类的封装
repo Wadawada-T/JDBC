@@ -1,0 +1,55 @@
+每个操作都进行一次驱动加载，并且有很多重复的代码
+将重复代码封装在JDBCUtils工具类中
+
+
+JDBCUtils：1、在静态代码块中加载驱动
+2、创建一个获取连接对象的静态方法
+          3、创建一个释放资源的静态方法
+          4、将驱动，数据库地址，用户名，密码存储在properties配置文件中，使用工具类读取信息进行配置
+
+
+
+
+如何解决SQL注入问题
+选择先对SQL语句进行预编译，将需要传入的参数后传进去，传入的参数不会识别关键字
+PreparedStatment对象
+
+
+
+
+package com.offon.jdbc;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.offon.jd.JDBCUtils;
+
+public class exercise_增 {
+
+	public static void main(String[] args) throws Exception {
+		//添加信息
+		//获取到从前端传输来的用户名和密码
+		String username = "张三";
+		String password = "123";
+		
+		//获取连接对象
+		Connection conn = JDBCUtils.getConn();
+		
+		//获取操作数据库的对象 prepareStatement预编译SQL语句
+		PreparedStatement pstmt = conn.prepareStatement(" insert into users values(null,?,?) ");
+		
+		//传入参数
+		pstmt.setString(1, username);
+		pstmt.setString(2, password);
+		
+		//执行SQL语句
+		int i = pstmt.executeUpdate();
+		System.out.println(i>0?"添加成功":"添加失败");
+		
+		//释放资源
+		JDBCUtils.backResource(null, pstmt, conn);
+
+	}
+
+}
