@@ -1,0 +1,42 @@
+public static void main(String[] args) throws Exception {
+//		1、加载驱动
+		Class.forName("com.mysql.jdbc.Driver");		
+    
+    // 2、创建连接-----与数据之间的连接  参数顺序（数据库地址、密码、账号）
+    /*
+    *url:数据库地址
+    *1、jdbc:mysql://localhost:3306/day09?useUnicode=true&characterEncoding=utf-8
+    *2、jdbc:mysql://localhost:3306/day09
+    *3/jdbc:mysql:///day
+    */
+
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/day09", "root", "root");
+//		3、创建操作数据库的对象
+		Statement stmt = conn.createStatement();
+//		4、执行SQL语句，获得返回结果集、解析结果集
+
+    /*
+    *executeQuery()  查询操作DQL   返回值ResultSet类型
+    *executeUpdate() 增删改操作DML  返回值为int 类型---操作修改了几条记录返回数字几
+    *execute() DQL、DML      返回值boolean类型  DQL返回true   DML返回false
+    *
+    */
+		ResultSet rs = stmt.executeQuery(" select * from users ");
+		while(rs.next()) {
+    
+    /*
+    *获取指定字段的记录值
+    *1、rs.getObject(字段名称)
+    *2、rs.getObject(字段的位置)---注意，从1开始
+    */
+			int uid = rs.getInt("uid");
+			String uname = rs.getString("uname");
+			String upwd = rs.getString("upwd");
+			
+			System.out.println(uid+" :"+uname+" :"+upwd);
+		}
+//		5、释放资源
+		rs.close();
+		stmt.close();
+		conn.close();	
+	}
