@@ -1,0 +1,11 @@
+JDBC的简介
+
+JDBC(java database connectivity) Java的数据库连接
+
+本质：Java代码中提供一套操作数据库的接口，由数据库厂商去实现接口
+
+sun公司提供的一套接口：
+       driver 驱动
+       connection 连接
+       statement 操作数据库、执行SQL语句
+       resultSet 结果集
