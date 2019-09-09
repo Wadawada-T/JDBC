@@ -1,0 +1,73 @@
+方法二：使用配置文件  
+1、文件名称c3p0-config.xml
+2、放置在src下边
+3、必须是xml文件
+<c3p0-config>
+  <default-config>
+    <property name="driverClass">com.mysql.jdbc.Driver</property>
+    <property name="jdbcUrl">jdbc:mysql:///day10</property>
+    <property name="user">root</property>
+    <property name="password">root</property>
+    <property name="initialPoolSize">10</property>
+    <property name="maxIdleTime">30</property>
+    <property name="maxPoolSize">100</property>
+    <property name="minPoolSize">10</property>
+  </default-config>
+  <named-config name="zq">
+	<property name="driverClass">com.mysql.jdbc.Driver</property>
+	<property name="jdbcUrl">jdbc:mysql:///day101</property>
+	<property name="user">root</property>
+	<property name="password">root</property>
+	<property name="initialPoolSize">10</property>
+	<property name="maxIdleTime">30</property>
+	<property name="maxPoolSize">100</property>
+	<property name="minPoolSize">10</property>
+</named-config>
+</c3p0-config>
+
+
+
+
+
+
+
+
+
+
+
+package com.offcn.c3p0;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
+public class Dome02 {
+
+	public static void main(String[] args) throws Exception {
+		// TODO Auto-generated method stub
+		ComboPooledDataSource cpds = new ComboPooledDataSource();
+		Connection conn = cpds.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(" select * from user ");
+		ResultSet rs = pstmt.executeQuery();
+		while(rs.next()){
+			System.out.println(rs.getObject(2));
+		}
+		rs.close();
+		pstmt.close();
+		conn.close();
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
