@@ -1,0 +1,56 @@
+核心对象：
+BasicDataSource 
+BasicDataSourceFactory
+
+1、导入jar文件
+commons-dbcp-1.4.jar
+commons-pool-1.5.6.jar
+2、创建核心对象
+BasicDataSource 
+3、设置连接参数
+
+
+1. demo1
+
+package com.offcn.dbcp;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.commons.dbcp.BasicDataSource;
+
+public class Dome01 {
+
+	public static void main(String[] args) throws Exception {
+		BasicDataSource dataSource = new BasicDataSource();
+		
+		//必须设置的参数
+		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql:///day10");
+		dataSource.setUsername("root");
+		dataSource.setPassword("root");
+		
+		//非必须设置的参数
+		dataSource.setInitialSize(2);
+		dataSource.setMaxActive(10);
+		Connection conn = dataSource.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(" select * from user ");
+		ResultSet rs = pstmt.executeQuery();
+		while(rs.next()){
+			
+			System.out.println(rs.getObject(1)+" "+rs.getObject(2)+" "+rs.getObject(3));
+			}
+		
+		rs.close();
+		pstmt.close();
+		conn.close();//连接池已经重写了Connection的close方法，代表归还连接到连接池
+		
+	}
+
+}
+
+
+
+
