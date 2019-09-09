@@ -1,0 +1,53 @@
+配置文件获取
+
+dbcp.properties文件
+driverClassName=com.mysql.jdbc.Driver
+url=jdbc:mysql:///day10
+username=root
+password=root
+
+
+
+
+
+
+
+
+
+
+
+
+package com.offcn.dbcp;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+
+public class Demo02 {
+
+	public static void main(String[] args) throws Exception {
+		//加载配置文件
+		Properties p = new Properties();
+		p.load(new FileInputStream("src/dbcp.properties"));
+		DataSource dataSource = BasicDataSourceFactory.createDataSource(p);
+		Connection conn = dataSource.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(" insert into user values(null,?,?) ");
+		pstmt.setString(1, "Lucky");
+		pstmt.setString(2, "111");
+		
+		int i = pstmt.executeUpdate();
+		System.out.println(i);
+		pstmt.close();
+		conn.close();//归还连接
+
+	}
+
+}
