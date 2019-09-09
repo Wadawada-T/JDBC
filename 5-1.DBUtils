@@ -1,0 +1,149 @@
+作用：封装了JDBC的所有操作步骤----（基于连接池）
+
+QueryRunner
+      Query(sql,返回值类型,参数1，参数2.....)----- DQL
+      Update(sql,参数1,参数2)--------DML
+      
+ResultSetHandler
+    ArrayHandler,  
+    ArrayListHandler
+    MapHandler
+    MapListHandler
+    BeanListHandler
+    ScalarHandler
+    
+  
+  
+package com.offcn.dbutil;
+
+import java.sql.SQLException;
+
+import org.apache.commons.dbutils.QueryRunner;
+
+import com.offcn.utils.C3p0Utils;
+
+public class demo01 {
+
+	public static void main(String[] args) throws Exception {
+		QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+		int i = qr.update(" update user set uname=? where uname=? ","hehe","Mack");
+		System.out.println(i);
+		
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.offcn.dbutil;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.junit.Test;
+
+import com.offcn.domain.User;
+import com.offcn.utils.C3p0Utils;
+
+public class Demo02 {
+		
+		//添加
+		@Test
+		public void addUser() throws Exception{
+			QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+			int i = qr.update(" insert into user values(null,?,?) ","elice","12345");
+			System.out.println(i);
+		}
+		
+		//查询张三的信息,返回值类型 ArrayHandler  数组
+		@Test
+		public void findUserByUname() throws Exception {
+			QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+			Object[] arr = qr.query(" select * from user where uname=? ",new ArrayHandler(),"张三");
+			System.out.println(Arrays.toString(arr));
+			
+			
+		}
+		//查询张三的信息,返回值类型 ArrayListHandler  集合中装有数组
+			@Test
+			public void findUsers() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				List<Object[]> list = qr.query(" select * from user ",new ArrayListHandler());
+				for(Object[] arr:list) {
+					System.out.println(Arrays.toString(arr));
+				}
+				
+				
+			}
+			
+			//查询张三的信息,返回值类型 MapHandler  map返回记录
+			@Test
+			public void findUsersByName() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				Map<String, Object> map = qr.query(" select * from user where uname=? ",new MapHandler(),"张三");
+				for(String key:map.keySet()) {
+					Object value = map.get(key);
+					System.out.println(key+":"+value);
+				}
+				
+				
+			}	
+			//查询张三的信息,返回值类型 MapListHandler  list中存储多个map   返回记录
+			@Test
+			public void findUser() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				 List<Map<String, Object>> maps = qr.query(" select * from user ",new MapListHandler());
+				for(Map<String, Object> map:maps) {
+					for(String key:map.keySet()) {
+						Object value = map.get(key);
+						System.out.println(key+":"+value);
+					}
+				}	
+			}
+			//查询张三的信息,返回值类型 BeanHandler  user对象返回记录
+			@Test
+			public void findUsersByName3() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				User user = qr.query(" select * from user where uname=? ",new BeanHandler<User>(User.class),"张三");
+				System.out.println(user);			
+			}	
+			//查询所有用户信息,返回值类型 BeanListHandler  List<user> 返回记录
+			@Test
+			public void findUsers3() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				List<User> users = qr.query(" select * from user ",new BeanListHandler<User>(User.class));
+				for(User user:users) {
+					System.out.println(user);
+				}
+							
+			}
+			//查询拥所有用户的数量，返回值 ScalarHandler
+			@Test
+			public void findUserNum() throws Exception {
+				QueryRunner qr = new QueryRunner(C3p0Utils.getDataSource());
+				Long count = (Long)qr.query(" select count(*) from user ",new ScalarHandler());
+				System.out.println(count.intValue());
+							
+			}
+		
+		
+}
