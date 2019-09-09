@@ -1,0 +1,103 @@
+封装工具类，使用C3P0连接池获取连接和连接池对象
+c3p0Utils.java
+
+
+package com.offcn.utils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
+public class c3p0Utils {
+	private static ComboPooledDataSource cpds = new ComboPooledDataSource();
+	
+	
+	//创建一个获取连接对象的方法
+	public static Connection getcon(){
+		Connection conn = null;
+		try {
+			conn = cpds.getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return conn;
+	}
+	
+	//创建一个获取连接池的方法
+	public static DataSource getDataSource() {
+		return cpds;
+	}
+	
+	//释放资源 ,归还连接
+	public static void backSource(ResultSet rs,PreparedStatement pstmt,Connection conn){
+		if(rs!=null){
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(pstmt != null){
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(conn !=null){
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+package com.offcn.c3p0;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.offcn.utils.c3p0Utils;
+
+public class Demo03 {
+
+	public static void main(String[] args) throws Exception {
+		Connection conn = c3p0Utils.getcon();
+		
+		PreparedStatement pstmt = conn.prepareStatement(" insert into user values(null,?,?) ");
+		pstmt.setString(1, "Mack");
+		pstmt.setString(2, "213");
+		
+		int i = pstmt.executeUpdate();
+		System.out.println(i);
+	}
+
+}
