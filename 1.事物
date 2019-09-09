@@ -1,0 +1,104 @@
+在一个完整的业务逻辑中，所包含的所有小单元（SQL语句）,要么同时成功，要么同时失败
+
+
+事物好似绑在用一个连接上的
+
+
+cmd中的书写格式
+Start transaction;
+
+Sql1: update account set money = money-8000 where username=’张三’；
+Sql2:update account set money = money+8000 where username=’李四’；
+
+Commit;/rollback;
+
+
+实际运用中：必须要保证同一个事务中的所有小单元sql代码的指向，必须要在相同的连接对象上
+Conn.setAutoCommit(false/true);
+默认值为true,说明所有SQL的执行都是自动提交的
+如果要开启事务，将提交方式改成手动  Conn.setAutoCommit(false)
+
+如果事务内的单元执行顺利，执行完之后手动提交事务
+Conn.commit()
+
+如果事务内的单元执行不顺利，出现异常时将事务回滚
+Conn.rollback()
+
+
+
+张三给李四转8000元
+
+
+
+package com.offcn.transform;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.offcn.utils.JDBCUtils;
+
+public class Demo01 {
+	public static void main(String[] args) throws Exception {
+		//张三给李四转8000元
+		String addName = "lisi";
+		String delName = "zhangsan";
+		double money = 8000;
+		//进入赚钱操作，先获取连接对象
+		Connection conn = JDBCUtils.getConn();  （之前的包）
+		try {
+			//转账之前，要开启事务
+			conn.setAutoCommit(false);
+			//调用减少钱的方法和增加钱的方法
+			delMoney(conn, money, delName);
+			
+			//模拟异常的出现
+//			int i=1/0;
+			
+			addMoney(conn, money, addName);
+			//没有异常时，提交事务
+			conn.commit();
+		} catch (Exception e) {
+			//出现异常，回滚事务
+			conn.rollback();
+			e.printStackTrace();
+		}finally {
+			conn.close();
+		}
+		
+		
+	}
+	
+	
+	//减少钱的方法
+	public static void delMoney(Connection conn,double money,String name) throws Exception {
+		PreparedStatement pstmt = conn.prepareStatement(" update account set money = money-? where username=? ");
+		pstmt.setDouble(1, money);
+		pstmt.setString(2, name);
+		int i = pstmt.executeUpdate();
+		if(i>0) {
+			System.out.println(name+"的账户，减少了"+money+"钱");
+		}	
+		pstmt.close();		
+	}
+	
+
+	//增加钱的方法
+	public static void addMoney(Connection conn,double money,String name) throws Exception {
+		PreparedStatement pstmt = conn.prepareStatement(" update account set money = money+? where username=? ");
+		pstmt.setDouble(1, money);
+		pstmt.setString(2, name);
+		int i = pstmt.executeUpdate();
+		if(i>0) {
+			System.out.println(name+"的账户，增加了"+money+"钱");
+		}	
+		pstmt.close();	
+		
+		
+		
+	}
+	
+	
+	
+
+}
