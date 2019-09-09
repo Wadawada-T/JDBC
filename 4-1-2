@@ -1,0 +1,41 @@
+DruidDataSourceFactory
+
+配置文件获取
+
+
+
+package com.offcn.druid;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+
+public class dmeo02 {
+
+	public static void main(String[] args) throws Exception {
+		Properties p = new Properties();
+		p.load(new FileInputStream("src/druid.properties"));
+		
+		DataSource dataSource = DruidDataSourceFactory.createDataSource(p);
+		Connection conn = dataSource.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(" update user set uname=? where uname=? ");
+		//将名字hehe 改为Mack
+		pstmt.setString(1, "Mack");
+		pstmt.setString(2, "hehe");
+		
+		int i = pstmt.executeUpdate();
+		System.out.println(i);
+		pstmt.close();
+		conn.close();
+
+	}
+
+}
