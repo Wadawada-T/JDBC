@@ -1,0 +1,38 @@
+Druid连接池
+DruidDataSource
+
+
+
+package com.offcn.druid;
+
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.alibaba.druid.pool.DruidDataSource;
+
+public class Demo01 {
+
+	
+	public static void main(String[] args) throws Exception {
+		DruidDataSource dataSource = new DruidDataSource();
+		//=====================================
+		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql:///day10");
+		dataSource.setUsername("root");
+		dataSource.setPassword("root");
+		//======================================
+		dataSource.setInitialSize(3);
+		
+		Connection conn = dataSource.getConnection();
+		//将名字Mack改为hehe
+		PreparedStatement pstmt = conn.prepareStatement(" update user set uname=? where uname=? ");
+		pstmt.setString(1, "hehe");
+		pstmt.setString(2, "Mack");
+		int i = pstmt.executeUpdate();
+		System.out.println(i);
+		pstmt.close();
+		conn.close();
+	}
+
+}
